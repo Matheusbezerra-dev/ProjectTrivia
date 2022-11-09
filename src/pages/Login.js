@@ -1,4 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { func } from 'prop-types';
+import { playerInfo } from '../redux/actions';
+import requestTokenApi from '../services/requestTokenApi';
+import tokenStorage from '../services/handleLocalStorage';
 
 class Login extends React.Component {
   state = {
@@ -10,7 +15,16 @@ class Login extends React.Component {
     this.setState({ [name]: value });
   };
 
+  handleClick = async () => {
+    const { name, email } = this.state;
+    const { player, history } = this.props;
+    tokenStorage(await requestTokenApi());
+    player(name, email);
+    history.push('/game');
+  };
+
   render() {
+    const { history } = this.props;
     const { email, name } = this.state;
     const magicNumber = 2;
     const validName = name.length >= magicNumber;
@@ -49,9 +63,24 @@ class Login extends React.Component {
         >
           Entrar
         </button>
+        <button
+          type="button"
+          data-testid="btn-settings"
+          onClick={ () => history.push('/settings') }
+        >
+          Configurações
+        </button>
       </div>
     );
   }
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => ({
+  player: (name, gravatarEmail) => dispatch(playerInfo(name, gravatarEmail)),
+});
+
+Login.propTypes = {
+  player: func,
+}.isRequired;
+
+export default connect(null, mapDispatchToProps)(Login);
