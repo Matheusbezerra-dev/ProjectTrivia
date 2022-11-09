@@ -5,3 +5,10 @@ export const playerInfo = (name, gravatarEmail) => ({
   name,
   gravatarEmail,
 });
+
+export const SCORE = 'SCORE';
+
+export const totalScore = (score) => ({
+  type: SCORE,
+  score,
+});
