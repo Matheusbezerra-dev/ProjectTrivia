@@ -26,3 +26,4 @@ const player = (state = INITIAL_STATE, action) => {
 };
 
 export default player;
+// alteracao pra fazer commit
