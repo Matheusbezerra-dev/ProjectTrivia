@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import requestQuestionsApi from '../services/requestQuestionsApi';
+import './Game.css';
 
 class Game extends Component {
   state = {
     questions: [],
     index: 0,
+    color: false,
   };
 
   componentDidMount() {
@@ -32,7 +34,7 @@ class Game extends Component {
   };
 
   render() {
-    const { questions, index } = this.state;
+    const { questions, index, color } = this.state;
     return (
       <div>
         <Header />
@@ -45,21 +47,27 @@ class Game extends Component {
                 <div data-testid="answer-options">
                   {this.questionRender(
                     [...element.incorrect_answers, element.correct_answer],
-                  ).map((e, indexBtn) => (
-                    <button
-                      type="button"
-                      key={ e.type }
-                      data-testid={ e === element.correct_answer
-                        ? 'correct-answer' : `wrong-answer-${indexBtn}` }
-                      onClick={ () => {
-                        this.setState({
-                          index: index + 1,
-                        });
-                      } }
-                    >
-                      { e }
-                    </button>
-                  ))}
+                  ).map((e, indexBtn) => {
+                    const btnColor = (e === element.correct_answer ? 'green' : 'red');
+                    return (
+                      <button
+                        type="button"
+                        key={ e.type }
+                        className={ color === true
+                          ? btnColor : '' }
+                        data-testid={ e === element.correct_answer
+                          ? 'correct-answer' : `wrong-answer-${indexBtn}` }
+                        onClick={ () => {
+                          this.setState({
+                          // index: index + 1,
+                            color: true,
+                          });
+                        } }
+                      >
+                        { e }
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             );
