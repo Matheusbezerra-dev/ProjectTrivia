@@ -7,6 +7,8 @@ export const playerInfo = (name, gravatarEmail) => ({
   gravatarEmail,
 });
 
+export const SCORE = 'SCORE';
+
 export const totalScore = (score) => ({
   type: SCORE,
   score,
