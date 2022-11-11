@@ -10,6 +10,7 @@ class Game extends Component {
     index: 0,
     color: false,
     timer: 30,
+    corrects: 0,
   };
 
   componentDidMount() {
@@ -51,8 +52,44 @@ class Game extends Component {
     return sortIndex;
   };
 
+  sumScore = () => {
+    const { timer, questions, index, corrects } = this.state;
+    let scoreQuestion = 0;
+    const TEN = 10;
+    const rules = {
+      hard: 3,
+      medium: 2,
+      easy: 1,
+    };
+    const { difficulty } = questions[index];
+    if (difficulty === 'hard') {
+      scoreQuestion = TEN + (timer * rules.hard);
+    } else if (difficulty === 'medium') {
+      scoreQuestion = TEN + (timer * rules.medium);
+    } else {
+      scoreQuestion = TEN + (timer * rules.easy);
+    }
+    const finalResult = scoreQuestion * +corrects;
+    return finalResult;
+  };
+
+  handleClickScore = (event) => {
+    const { target } = event;
+    const { className } = target;
+    // const { questions } = this.state;
+    console.log(target);
+    if (className === 'green') {
+      this.setState({
+        color: true,
+        corrects: corrects + 1,
+      });
+    }
+  };
+
   render() {
     const { questions, index, color, timer } = this.state;
+    // const { difficulty } = questions;
+    // console.log(difficulty);
     return (
       <div>
         <Header />
@@ -62,6 +99,7 @@ class Game extends Component {
             return (
               <div key={ element.type }>
                 <h4 data-testid="question-category">{element.category}</h4>
+                {console.log(element.difficulty)}
                 <h3 data-testid="question-text">{element.question}</h3>
                 <div data-testid="answer-options">
                   {element.respostas.map((e, indexBtn) => {
@@ -75,18 +113,23 @@ class Game extends Component {
                           ? btnColor : '' }
                         data-testid={ e === element.correct_answer
                           ? 'correct-answer' : `wrong-answer-${indexBtn}` }
-                        onClick={ () => {
-                          this.setState({
-                          // index: index + 1,
-                            color: true,
-                          });
-                        } }
+                        onClick={ this.handleClickScore }
                       >
                         { e }
                       </button>
                     );
                   })}
                 </div>
+                <button
+                  type="button"
+                  onClick={ () => {
+                    this.setState({
+                      index: index + 1,
+                    });
+                  } }
+                >
+                  Next
+                </button>
               </div>
             );
           }
