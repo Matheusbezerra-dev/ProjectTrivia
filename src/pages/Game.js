@@ -9,11 +9,44 @@ class Game extends Component {
     questions: [],
     index: 0,
     color: false,
+    timer: 31,
   };
 
   componentDidMount() {
     this.validToken();
+    const second = 1000;
+    // const interval = setInterval(this.handleTimer, second);
+    this.interval = window.setInterval(() => {
+      const { timer } = this.state;
+      const zero = 1;
+      if (timer === zero) {
+        this.setState({ color: true });
+      }
+      this.setState((prev) => ({ timer: prev.timer - 1 }));
+    }, second);
   }
+
+  componentDidUpdate() {
+    const { timer } = this.state;
+    const zero = 0;
+    if (timer === zero) {
+      clearInterval(this.interval);
+    }
+  }
+
+  // timerStop = () => {
+  //   const { timer } = this.state;
+  //   const second = 1000;
+  //   const interval = setInterval(() => {
+  //     this.setState((prev) => ({
+  //       timer: prev.timer - 1,
+  //     }), () => {
+  //       if (timer === 0) {
+  //         clearInterval(interval);
+  //       }
+  //     });
+  //   }, second);
+  // };
 
   validToken = async () => {
     const { history } = this.props;
@@ -34,16 +67,18 @@ class Game extends Component {
   };
 
   render() {
-    const { questions, index, color } = this.state;
+    const { questions, index, color, timer } = this.state;
+    const zero = 0;
     return (
       <div>
         <Header />
+        {timer === zero ? (<h3>0</h3>) : (<h3>{ timer }</h3>)}
         { questions.map((element, i) => {
           if (i === index) {
             return (
               <div key={ element.type }>
-                <h2 data-testid="question-category">{element.category}</h2>
-                <h2 data-testid="question-text">{element.question}</h2>
+                <h4 data-testid="question-category">{element.category}</h4>
+                <h3 data-testid="question-text">{element.question}</h3>
                 <div data-testid="answer-options">
                   {this.questionRender(
                     [...element.incorrect_answers, element.correct_answer],
@@ -53,6 +88,7 @@ class Game extends Component {
                       <button
                         type="button"
                         key={ e.type }
+                        disabled={ color }
                         className={ color === true
                           ? btnColor : '' }
                         data-testid={ e === element.correct_answer
