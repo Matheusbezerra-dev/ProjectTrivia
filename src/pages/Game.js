@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
 import requestQuestionsApi from '../services/requestQuestionsApi';
 import './Game.css';
+import { totalScore, scoreAssertions } from '../redux/actions';
 
 class Game extends Component {
   state = {
@@ -11,6 +13,7 @@ class Game extends Component {
     color: false,
     timer: 30,
     corrects: 0,
+    scoreLocal: 0,
   };
 
   componentDidMount() {
@@ -52,7 +55,9 @@ class Game extends Component {
     return sortIndex;
   };
 
-  sumScore = () => {
+  sumScore = (event) => {
+    const { target: { name } } = event;
+    const { dispatch } = this.props;
     const { timer, questions, index, corrects } = this.state;
     let scoreQuestion = 0;
     const TEN = 10;
@@ -61,6 +66,7 @@ class Game extends Component {
       medium: 2,
       easy: 1,
     };
+
     const { difficulty } = questions[index];
     if (difficulty === 'hard') {
       scoreQuestion = TEN + (timer * rules.hard);
@@ -69,27 +75,18 @@ class Game extends Component {
     } else {
       scoreQuestion = TEN + (timer * rules.easy);
     }
-    const finalResult = scoreQuestion * +corrects;
-    return finalResult;
-  };
-
-  handleClickScore = (event) => {
-    const { target } = event;
-    const { className } = target;
-    // const { questions } = this.state;
-    console.log(target);
-    if (className === 'green') {
-      this.setState({
-        color: true,
-        corrects: corrects + 1,
-      });
-    }
+    const finalResult = scoreQuestion * name;
+    this.setState((prev) => ({
+      scoreLocal: prev.scoreLocal + finalResult,
+      corrects: corrects + +name,
+    }), () => {
+      dispatch(totalScore(this.state));
+      dispatch(scoreAssertions(this.state));
+    });
   };
 
   render() {
     const { questions, index, color, timer } = this.state;
-    // const { difficulty } = questions;
-    // console.log(difficulty);
     return (
       <div>
         <Header />
@@ -99,7 +96,6 @@ class Game extends Component {
             return (
               <div key={ element.type }>
                 <h4 data-testid="question-category">{element.category}</h4>
-                {console.log(element.difficulty)}
                 <h3 data-testid="question-text">{element.question}</h3>
                 <div data-testid="answer-options">
                   {element.respostas.map((e, indexBtn) => {
@@ -109,11 +105,16 @@ class Game extends Component {
                         type="button"
                         key={ e.type }
                         disabled={ color }
+                        name={ e === element.correct_answer
+                          ? 1 : 0 }
                         className={ color === true
                           ? btnColor : '' }
                         data-testid={ e === element.correct_answer
                           ? 'correct-answer' : `wrong-answer-${indexBtn}` }
-                        onClick={ this.handleClickScore }
+                        onClick={ (el) => {
+                          this.setState({ color: true });
+                          this.sumScore(el);
+                        } }
                       >
                         { e }
                       </button>
@@ -125,6 +126,7 @@ class Game extends Component {
                   onClick={ () => {
                     this.setState({
                       index: index + 1,
+                      color: false,
                     });
                   } }
                 >
@@ -144,6 +146,7 @@ Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
-export default Game;
+export default connect()(Game);

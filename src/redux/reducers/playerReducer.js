@@ -18,12 +18,12 @@ const player = (state = INITIAL_STATE, action) => {
   case SCORE:
     return {
       ...state,
-      score: action.score,
+      score: action.score.scoreLocal,
     };
   case ASSERTIONS:
     return {
       ...state,
-      assertions: action.assertions,
+      assertions: action.assertions.corrects,
     };
   default:
     return state;
