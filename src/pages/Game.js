@@ -14,6 +14,7 @@ class Game extends Component {
     timer: 30,
     corrects: 0,
     scoreLocal: 0,
+    nextBtn: false,
   };
 
   componentDidMount() {
@@ -86,7 +87,7 @@ class Game extends Component {
   };
 
   render() {
-    const { questions, index, color, timer } = this.state;
+    const { questions, index, color, timer, nextBtn } = this.state;
     return (
       <div>
         <Header />
@@ -112,7 +113,7 @@ class Game extends Component {
                         data-testid={ e === element.correct_answer
                           ? 'correct-answer' : `wrong-answer-${indexBtn}` }
                         onClick={ (el) => {
-                          this.setState({ color: true });
+                          this.setState({ color: true, nextBtn: true });
                           this.sumScore(el);
                         } }
                       >
@@ -121,17 +122,21 @@ class Game extends Component {
                     );
                   })}
                 </div>
-                <button
-                  type="button"
-                  onClick={ () => {
-                    this.setState({
-                      index: index + 1,
-                      color: false,
-                    });
-                  } }
-                >
-                  Next
-                </button>
+                {nextBtn && (
+                  <button
+                    data-testid="btn-next"
+                    type="button"
+                    onClick={ () => {
+                      this.setState({
+                        index: index + 1,
+                        color: false,
+                        nextBtn: false,
+                      });
+                    } }
+                  >
+                    Next
+                  </button>
+                )}
               </div>
             );
           }
