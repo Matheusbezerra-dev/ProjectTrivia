@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
 import requestQuestionsApi from '../services/requestQuestionsApi';
 import './Game.css';
+import { totalScore, scoreAssertions } from '../redux/actions';
 
 class Game extends Component {
   state = {
@@ -10,6 +12,9 @@ class Game extends Component {
     index: 0,
     color: false,
     timer: 30,
+    corrects: 0,
+    scoreLocal: 0,
+    nextBtn: false,
   };
 
   componentDidMount() {
@@ -51,8 +56,63 @@ class Game extends Component {
     return sortIndex;
   };
 
+  sumScore = (event) => {
+    const { target: { name } } = event;
+    const { dispatch } = this.props;
+    const { timer, questions, index, corrects } = this.state;
+    let scoreQuestion = 0;
+    const TEN = 10;
+    const rules = {
+      hard: 3,
+      medium: 2,
+      easy: 1,
+    };
+
+    const { difficulty } = questions[index];
+    if (difficulty === 'hard') {
+      scoreQuestion = TEN + (timer * rules.hard);
+    } else if (difficulty === 'medium') {
+      scoreQuestion = TEN + (timer * rules.medium);
+    } else {
+      scoreQuestion = TEN + (timer * rules.easy);
+    }
+    const finalResult = scoreQuestion * name;
+    this.setState((prev) => ({
+      scoreLocal: prev.scoreLocal + finalResult,
+      corrects: corrects + +name,
+    }), () => {
+      dispatch(totalScore(this.state));
+      dispatch(scoreAssertions(this.state));
+    });
+  };
+
+  nextQuestion = () => {
+    const { history } = this.props;
+    const { index } = this.state;
+    const four = 4;
+    this.setState({
+      index: index + 1,
+      color: false,
+      nextBtn: false,
+    });
+    if (index === four) history.push('/feedback');
+  };
+
+  buttonColor = (el) => {
+    this.setState({ color: true, nextBtn: true });
+    this.sumScore(el);
+  };
+
+  indexTeste = () => {
+    const { index } = this.state;
+    const four = 4;
+    return (
+      index === four ? 'End Game' : 'Next'
+    );
+  };
+
   render() {
-    const { questions, index, color, timer } = this.state;
+    const { questions, index, color, timer, nextBtn } = this.state;
     return (
       <div>
         <Header />
@@ -71,22 +131,26 @@ class Game extends Component {
                         type="button"
                         key={ e.type }
                         disabled={ color }
-                        className={ color === true
-                          ? btnColor : '' }
+                        name={ e === element.correct_answer ? 1 : 0 }
+                        className={ color === true ? btnColor : '' }
                         data-testid={ e === element.correct_answer
                           ? 'correct-answer' : `wrong-answer-${indexBtn}` }
-                        onClick={ () => {
-                          this.setState({
-                          // index: index + 1,
-                            color: true,
-                          });
-                        } }
+                        onClick={ this.buttonColor }
                       >
                         { e }
                       </button>
                     );
                   })}
                 </div>
+                {nextBtn && (
+                  <button
+                    data-testid="btn-next"
+                    type="button"
+                    onClick={ this.nextQuestion }
+                  >
+                    {this.indexTeste()}
+                  </button>
+                )}
               </div>
             );
           }
@@ -101,6 +165,7 @@ Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
-export default Game;
+export default connect()(Game);

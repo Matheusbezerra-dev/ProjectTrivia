@@ -1,4 +1,4 @@
-import { PLAYER, SCORE } from '../actions';
+import { PLAYER, SCORE, ASSERTIONS } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -18,7 +18,12 @@ const player = (state = INITIAL_STATE, action) => {
   case SCORE:
     return {
       ...state,
-      score: action.score,
+      score: action.score.scoreLocal,
+    };
+  case ASSERTIONS:
+    return {
+      ...state,
+      assertions: action.assertions.corrects,
     };
   default:
     return state;
