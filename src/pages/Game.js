@@ -86,8 +86,21 @@ class Game extends Component {
     });
   };
 
+  nextQuestion = () => {
+    const { history } = this.props;
+    const { index } = this.state;
+    const four = 4;
+    this.setState({
+      index: index + 1,
+      color: false,
+      nextBtn: false,
+    });
+    if (index === four) history.push('/feedback');
+  };
+
   render() {
     const { questions, index, color, timer, nextBtn } = this.state;
+    const four = 4;
     return (
       <div>
         <Header />
@@ -126,15 +139,16 @@ class Game extends Component {
                   <button
                     data-testid="btn-next"
                     type="button"
-                    onClick={ () => {
-                      this.setState({
-                        index: index + 1,
-                        color: false,
-                        nextBtn: false,
-                      });
-                    } }
+                    onClick={ this.nextQuestion }
+                    // onClick={ () => {
+                    //   this.setState({
+                    //     index: index + 1,
+                    //     color: false,
+                    //     nextBtn: false,
+                    //   });
+                    // } }
                   >
-                    Next
+                    {index === four ? 'Fim do jogo' : 'Next'}
                   </button>
                 )}
               </div>
