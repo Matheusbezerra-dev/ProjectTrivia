@@ -98,9 +98,21 @@ class Game extends Component {
     if (index === four) history.push('/feedback');
   };
 
+  buttonColor = (el) => {
+    this.setState({ color: true, nextBtn: true });
+    this.sumScore(el);
+  };
+
+  indexTeste = () => {
+    const { index } = this.state;
+    const four = 4;
+    return (
+      index === four ? 'End Game' : 'Next'
+    );
+  };
+
   render() {
     const { questions, index, color, timer, nextBtn } = this.state;
-    const four = 4;
     return (
       <div>
         <Header />
@@ -119,16 +131,11 @@ class Game extends Component {
                         type="button"
                         key={ e.type }
                         disabled={ color }
-                        name={ e === element.correct_answer
-                          ? 1 : 0 }
-                        className={ color === true
-                          ? btnColor : '' }
+                        name={ e === element.correct_answer ? 1 : 0 }
+                        className={ color === true ? btnColor : '' }
                         data-testid={ e === element.correct_answer
                           ? 'correct-answer' : `wrong-answer-${indexBtn}` }
-                        onClick={ (el) => {
-                          this.setState({ color: true, nextBtn: true });
-                          this.sumScore(el);
-                        } }
+                        onClick={ this.buttonColor }
                       >
                         { e }
                       </button>
@@ -140,15 +147,8 @@ class Game extends Component {
                     data-testid="btn-next"
                     type="button"
                     onClick={ this.nextQuestion }
-                    // onClick={ () => {
-                    //   this.setState({
-                    //     index: index + 1,
-                    //     color: false,
-                    //     nextBtn: false,
-                    //   });
-                    // } }
                   >
-                    {index === four ? 'Fim do jogo' : 'Next'}
+                    {this.indexTeste()}
                   </button>
                 )}
               </div>

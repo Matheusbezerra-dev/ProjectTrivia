@@ -13,10 +13,10 @@ class Feedback extends Component {
 
   message = () => {
     const { assertions } = this.props;
-    const magic = 3;
+    const THREE = 3;
     const wellDone = <p data-testid="feedback-text">Well Done!</p>;
     const couldBeBetter = <p data-testid="feedback-text">Could be better...</p>;
-    const paragraph = assertions >= magic ? wellDone : couldBeBetter;
+    const paragraph = assertions >= THREE ? wellDone : couldBeBetter;
     return paragraph;
   };
 
@@ -29,13 +29,13 @@ class Feedback extends Component {
           {this.message()}
         </div>
         <div>
-          <h3>Final score</h3>
+          <h3>Final Score</h3>
           <div>
-            <p>Total question:</p>
+            <p>Total Questions:</p>
             <p data-testid="feedback-total-question">{ assertions }</p>
           </div>
           <div>
-            <p>Total score:</p>
+            <p>Total Score:</p>
             <p data-testid="feedback-total-score">{ score }</p>
           </div>
         </div>
@@ -46,7 +46,6 @@ class Feedback extends Component {
         >
           Play Again
         </button>
-
         <button
           type="button"
           data-testid="btn-ranking"
