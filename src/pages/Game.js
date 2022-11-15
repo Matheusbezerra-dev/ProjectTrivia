@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+import { func } from 'prop-types';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
 import requestQuestionsApi from '../services/requestQuestionsApi';
 import './Game.css';
 import { totalScore, scoreAssertions } from '../redux/actions';
+import { getStorage, playerStorage } from '../services/handleLocalStorage';
+
+const four = 4;
 
 class Game extends Component {
   state = {
@@ -15,10 +19,12 @@ class Game extends Component {
     corrects: 0,
     scoreLocal: 0,
     nextBtn: false,
+    players: [],
   };
 
   componentDidMount() {
     this.validToken();
+    this.getPlayer();
     const second = 1000;
     // const interval = setInterval(this.handleTimer, second);
     const interval = window.setInterval(() => {
@@ -89,13 +95,16 @@ class Game extends Component {
   nextQuestion = () => {
     const { history } = this.props;
     const { index } = this.state;
-    const four = 4;
+    // const four = 4;
     this.setState({
       index: index + 1,
       color: false,
       nextBtn: false,
     });
-    if (index === four) history.push('/feedback');
+    if (index === four) {
+      this.addPlayer();
+      history.push('/feedback');
+    }
   };
 
   buttonColor = (el) => {
@@ -105,10 +114,22 @@ class Game extends Component {
 
   indexTeste = () => {
     const { index } = this.state;
-    const four = 4;
+    // const four = 4;
     return (
       index === four ? 'End Game' : 'Next'
     );
+  };
+
+  addPlayer = () => {
+    const { name, email, score } = this.props;
+    const { players, index } = this.state;
+    const objPlayer = { name, email, score };
+    if (index >= four) playerStorage([...players, objPlayer]);
+  };
+
+  getPlayer = () => {
+    const players = getStorage();
+    if (players) this.setState({ players });
   };
 
   render() {
@@ -161,11 +182,18 @@ class Game extends Component {
   }
 }
 
-Game.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+const mapStateToProps = (state) => ({
+  score: state.player.score,
+  email: state.player.gravatarEmail,
+  name: state.player.name,
+});
 
-export default connect()(Game);
+Game.propTypes = {
+  // history: PropTypes.shape({
+  //   push: PropTypes.func,
+  // }).isRequired,
+  // dispatch: PropTypes.func.isRequired,
+  dispatch: func,
+}.isRequired;
+
+export default connect(mapStateToProps)(Game);
