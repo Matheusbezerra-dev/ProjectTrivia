@@ -1,7 +1,21 @@
 import React, { Component } from 'react';
 import { number } from 'prop-types';
 import { connect } from 'react-redux';
-import Header from '../components/Header';
+import md5 from 'crypto-js/md5';
+import logoTrybe from '../images/logoTrivia.png';
+import {
+  ContainerFeedback,
+  DivImgFeed,
+  DivImgGravatar,
+  DivMessage,
+} from '../style/style';
+import {
+  PMessage,
+  PScore,
+  ButtonRanking,
+  ButtonPlayGain,
+  DivContainer,
+} from '../style/style2';
 import { totalScore } from '../redux/actions';
 
 class Feedback extends Component {
@@ -21,39 +35,57 @@ class Feedback extends Component {
   };
 
   render() {
-    const { assertions, score, history } = this.props;
+    const { gravatarEmail, assertions, score, history } = this.props;
+    const hashGerada = md5(gravatarEmail).toString();
     return (
-      <div>
-        <Header />
-        <div>
-          {this.message()}
-        </div>
-        <div>
-          <h3>Final Score</h3>
-          <div>
-            <p>Total Questions:</p>
-            <p data-testid="feedback-total-question">{ assertions }</p>
-          </div>
-          <div>
-            <p>Total Score:</p>
-            <p data-testid="feedback-total-score">{ score }</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          data-testid="btn-play-again"
-          onClick={ this.resetScore }
-        >
-          Play Again
-        </button>
-        <button
-          type="button"
-          data-testid="btn-ranking"
-          onClick={ () => history.push('/ranking') }
-        >
-          View Ranking
-        </button>
-      </div>
+      <ContainerFeedback>
+        <DivImgFeed>
+          <img
+            src={ logoTrybe }
+            alt="Logo Trybe"
+          />
+        </DivImgFeed>
+        <DivImgGravatar>
+          <img
+            src={ `https://www.gravatar.com/avatar/${hashGerada}` }
+            alt="Gravatar Img"
+            data-testid="header-profile-picture"
+          />
+        </DivImgGravatar>
+        <DivMessage>
+          <PMessage>
+            {this.message()}
+          </PMessage>
+          <PScore>
+            <p
+              data-testid="feedback-total-question"
+            >
+              { `Você acertou ${assertions} questões!` }
+            </p>
+            <p
+              data-testid="feedback-total-score"
+            >
+              {`Um total ${score} pontos`}
+            </p>
+          </PScore>
+        </DivMessage>
+        <DivContainer>
+          <ButtonRanking
+            type="button"
+            data-testid="btn-ranking"
+            onClick={ () => history.push('/ranking') }
+          >
+            View Ranking
+          </ButtonRanking>
+          <ButtonPlayGain
+            type="button"
+            data-testid="btn-play-again"
+            onClick={ this.resetScore }
+          >
+            Play Again
+          </ButtonPlayGain>
+        </DivContainer>
+      </ContainerFeedback>
     );
   }
 }
@@ -61,6 +93,7 @@ class Feedback extends Component {
 const mapStateToProps = (state) => ({
   assertions: state.player.assertions,
   score: state.player.score,
+  gravatarEmail: state.player.gravatarEmail,
 });
 
 const mapDispatchToProps = (dispatch) => ({

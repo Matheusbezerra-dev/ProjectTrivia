@@ -5,8 +5,21 @@ import { connect } from 'react-redux';
 import Header from '../components/Header';
 import requestQuestionsApi from '../services/requestQuestionsApi';
 import './Game.css';
+import logoTrybe from '../images/iconeTrybe.png';
 import { totalScore, scoreAssertions } from '../redux/actions';
 import { getStorage, playerStorage } from '../services/handleLocalStorage';
+import {
+  DivHeader,
+  DivCategory,
+  DivQuestion,
+  DivFooter,
+  ButtonQuestion,
+  ButtonGame,
+  ButtonContainer,
+  ConatinerQuestion,
+  Ptext,
+  Timer,
+} from '../style/style';
 
 const four = 4;
 
@@ -100,6 +113,7 @@ class Game extends Component {
       index: index + 1,
       color: false,
       nextBtn: false,
+      timer: 30,
     });
     if (index === four) {
       this.addPlayer();
@@ -136,19 +150,29 @@ class Game extends Component {
     const { questions, index, color, timer, nextBtn } = this.state;
     return (
       <div>
-        <Header />
-        <h3>{ timer }</h3>
+        <div>
+          <DivHeader>
+            <Header />
+          </DivHeader>
+        </div>
         { questions.map((element, i) => {
           if (i === index) {
             return (
-              <div key={ element.type }>
-                <h4 data-testid="question-category">{element.category}</h4>
-                <h3 data-testid="question-text">{element.question}</h3>
-                <div data-testid="answer-options">
+              <ConatinerQuestion key={ element.type }>
+                <DivQuestion>
+                  <DivCategory
+                    data-testid="question-category"
+                  >
+                    {element.category}
+                  </DivCategory>
+                  <Ptext data-testid="question-text">{element.question}</Ptext>
+                  <Timer>{ `Tempo: ${timer}` }</Timer>
+                </DivQuestion>
+                <ButtonContainer data-testid="answer-options">
                   {element.respostas.map((e, indexBtn) => {
                     const btnColor = (e === element.correct_answer ? 'green' : 'red');
                     return (
-                      <button
+                      <ButtonQuestion
                         type="button"
                         key={ e.type }
                         disabled={ color }
@@ -159,24 +183,43 @@ class Game extends Component {
                         onClick={ this.buttonColor }
                       >
                         { e }
-                      </button>
+                      </ButtonQuestion>
                     );
                   })}
-                </div>
-                {nextBtn && (
-                  <button
+                </ButtonContainer>
+                {/* {nextBtn && (
+                  <ButtonGame
                     data-testid="btn-next"
                     type="button"
                     onClick={ this.nextQuestion }
                   >
                     {this.indexTeste()}
-                  </button>
-                )}
-              </div>
+                  </ButtonGame>
+                )} */}
+              </ConatinerQuestion>
             );
           }
           return null;
         })}
+        <DivFooter>
+          <div>
+            <img
+              src={ logoTrybe }
+              alt="logo da Trybe"
+            />
+          </div>
+          <div>
+            {nextBtn && (
+              <ButtonGame
+                data-testid="btn-next"
+                type="button"
+                onClick={ this.nextQuestion }
+              >
+                {this.indexTeste()}
+              </ButtonGame>
+            )}
+          </div>
+        </DivFooter>
       </div>
     );
   }
@@ -189,10 +232,6 @@ const mapStateToProps = (state) => ({
 });
 
 Game.propTypes = {
-  // history: PropTypes.shape({
-  //   push: PropTypes.func,
-  // }).isRequired,
-  // dispatch: PropTypes.func.isRequired,
   dispatch: func,
 }.isRequired;
 

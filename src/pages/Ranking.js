@@ -2,8 +2,19 @@ import React, { Component } from 'react';
 import { func } from 'prop-types';
 import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
+import {
+  DivCont,
+  ImgRanking,
+  PRanking,
+  ContainerRanking,
+  ButtonPlayGainRanking,
+  ImgRank,
+  H1Ranking,
+  ContRank,
+} from '../style/style2';
 import { totalScore } from '../redux/actions/index';
 import { getStorage } from '../services/handleLocalStorage';
+import imgTrivia from '../images/logoTrivia.png';
 
 class Ranking extends Component {
   state = {
@@ -28,11 +39,11 @@ class Ranking extends Component {
       const { email, name, score } = player;
       const gravatarEmail = md5(email).toString();
       return (
-        <li key={ index }>
-          <img src={ `https://www.gravatar.com/avatar/${gravatarEmail}` } alt={ name } />
-          <p data-testid={ `player-name-${index}` }>{name}</p>
-          <p data-testid={ `player-score-${index}` }>{score}</p>
-        </li>
+        <DivCont key={ index }>
+          <ImgRanking src={ `https://www.gravatar.com/avatar/${gravatarEmail}` } alt={ name } />
+          <PRanking data-testid={ `player-name-${index}` }>{name}</PRanking>
+          <p data-testid={ `player-score-${index}` }>{`${score} pontos`}</p>
+        </DivCont>
       );
     });
     return List;
@@ -40,19 +51,25 @@ class Ranking extends Component {
 
   render() {
     return (
-      <div>
-        <h1 data-testid="ranking-title">Ranking</h1>
-        <ol>
-          {this.listPlayer()}
-        </ol>
-        <button
-          type="button"
-          data-testid="btn-go-home"
-          onClick={ this.resetScore }
-        >
-          Início
-        </button>
-      </div>
+      <ContRank>
+        <ImgRank
+          src={ imgTrivia }
+          alt="Logo"
+        />
+        <ContainerRanking>
+          <H1Ranking data-testid="ranking-title">Ranking</H1Ranking>
+          <div>
+            {this.listPlayer()}
+          </div>
+          <ButtonPlayGainRanking
+            type="button"
+            data-testid="btn-go-home"
+            onClick={ this.resetScore }
+          >
+            Jogar novamente
+          </ButtonPlayGainRanking>
+        </ContainerRanking>
+      </ContRank>
     );
   }
 }
