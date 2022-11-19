@@ -187,15 +187,6 @@ class Game extends Component {
                     );
                   })}
                 </ButtonContainer>
-                {/* {nextBtn && (
-                  <ButtonGame
-                    data-testid="btn-next"
-                    type="button"
-                    onClick={ this.nextQuestion }
-                  >
-                    {this.indexTeste()}
-                  </ButtonGame>
-                )} */}
               </ConatinerQuestion>
             );
           }

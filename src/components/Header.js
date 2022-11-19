@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
 import md5 from 'crypto-js/md5';
-import { func, shape } from 'prop-types';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { DivImgTrivia, DivImgName } from '../style/style';
+import { LinkImg } from '../style/style2';
 import imgTrivia from '../images/logoTrivia.png';
+import settings from '../images/configuração.png';
 
 class Header extends Component {
-  // pushSetting = () => {
-  //   const { history } = this.props;
-  //   history.push('/settings');
-  // };
-
   render() {
-    const { history } = this.props;
     const { gravatarEmail, name, score } = this.props;
     const hashGerada = md5(gravatarEmail).toString();
     return (
@@ -42,15 +38,16 @@ class Header extends Component {
             <h3
               data-testid="header-score"
             >
-              { `Pontos: ${score}`}
+              { `Pontos: ${score || 0}`}
             </h3>
-            <button
-              type="button"
-              data-testid="btn-settings"
-              onClick={ () => history.push('/settings') }
+            <Link
+              to="/settings"
             >
-              Configurações
-            </button>
+              <LinkImg
+                src={ settings }
+                alt="configuração"
+              />
+            </Link>
           </div>
         </div>
       </header>
@@ -58,12 +55,7 @@ class Header extends Component {
   }
 }
 
-Header.propTypes = {
-  // gravatarEmail: PropTypes.string.isRequired,
-  // name: PropTypes.string.isRequired,
-  // score: PropTypes.number.isRequired,
-  history: shape({ push: func }),
-}.isRequired;
+Header.propTypes = {}.isRequired;
 
 const mapStateToProps = (state) => ({
   gravatarEmail: state.player.gravatarEmail,
